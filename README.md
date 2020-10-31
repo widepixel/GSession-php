@@ -12,7 +12,7 @@ PHP $_SESSION alternative / Superglobal variables
 <code>get_gsession([name]);</code><hr/>
 
 <p>Удаление переменной</p>
-<code>unset_gsession();</code><hr/>
+<code>unset_gsession([name]);</code><hr/>
 
 <p>Удаление всех переменных</p>
 <code>clear_gsession();</code><hr/>
