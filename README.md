@@ -26,7 +26,4 @@ PHP $_SESSION alternative / Superglobal variables
 <p>Проверка существования переменной, при истине вернет 1</p>
 <code>isset_gsession([name]);</code><hr/>
 
-<p>Проверка существования переменной, при истине вернет 1</p>
-<code>isset_gsession([name]);</code><br/><hr/>
-
 <p>Все переменные записываются в папку <b>variables</b>.</p>
