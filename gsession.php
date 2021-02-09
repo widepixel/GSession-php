@@ -13,7 +13,6 @@
 
 	function genGSessid($length = 8){
 		$chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-		//$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 		$numChars = strlen($chars);
 		$string = '';
 	  
