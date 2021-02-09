@@ -3,17 +3,44 @@
 	$path = dirname(__FILE__)."/variables/";		
 
 	
+	if(!isset($_COOKIE["PHPGSESSID"])){
+		$gsessid = genGSessid(26);
+		setcookie("PHPGSESSID", $gsessid, time()+7776000);
+	}else{
+		$gsessid = $_COOKIE["PHPGSESSID"];
+	}
+
+
+	function genGSessid($length = 8){
+		$chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		//$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		$numChars = strlen($chars);
+		$string = '';
+	  
+		for ($i = 0; $i < $length; $i++) {
+			$string .= substr($chars, rand(1, $numChars) - 1, 1);
+		}
+		
+		return $string;
+	}
+
+	
+	
 	function get_gsession($name){
 		
 		global $path;
+		global $gsessid;
 		
 		_expired_gsession();
 		
 		foreach(scandir($path) as $var){
 			if($var != ".." && $var != "."){
-				if($name == explode("-", $var)[0]){
+				$exp = explode("-", $var);
+				if($name == $exp[0] && $gsessid == $exp[3]){
+										
 					return file_get_contents($path.$var);
 					break;
+
 				}
 			}
 		}		
@@ -22,9 +49,13 @@
 	function clear_gsession(){
 		
 		global $path;
+		global $gsessid;
+		
 		foreach(scandir($path) as $var){
 			if($var != ".." && $var != "."){
-				unlink($path.$var);
+				if($gsessid == explode("-", $var)[3]){
+					unlink($path.$var);
+				}
 			}
 		}
 		
@@ -33,7 +64,8 @@
 	function lifetime_gsession($name){
 		
 		global $path;
-		
+		global $gsessid;
+
 		_expired_gsession();
 		
 		foreach(scandir($path) as $var){
@@ -41,7 +73,7 @@
 				
 				$exp = explode("-", $var);
 				
-				if($exp[0] == $name){
+				if($name == $exp[0] && $gsessid == $exp[3]){
 					
 					$time = time();
 					$dtime = $exp[2];
@@ -63,13 +95,17 @@
 	function list_gsession(){
 		
 		global $path;
+		global $gsessid;
 		
 		_expired_gsession();
 		
 		$array = Array();
 		foreach(scandir($path) as $var){
-			if($var != ".." &&$var != "."){
-				array_push($array, explode("-", $var)[0]);
+			if($var != ".." && $var != "."){
+				$exp = explode("-", $var);
+				if($gsessid == $exp[3]){
+					array_push($array, $exp[0]);
+				}
 			}
 		}
 		
@@ -80,6 +116,7 @@
 	function unset_gsession($name){
 		
 		global $path;
+		global $gsessid;
 		
 		_expired_gsession();
 		
@@ -93,12 +130,13 @@
 	function set_gsession($name, $value, $life_time=1800){
 		
 		global $path;
+		global $gsessid;
 		
 		_expired_gsession();
 		
 		$time = time();
 		$dead_time = time() + $life_time;
-		$var_name = $name."-".$time."-".$dead_time;
+		$var_name = $name."-".$time."-".$dead_time."-".$gsessid;
 		
 		if(!(stristr($name, "-"))){
 			
@@ -140,12 +178,14 @@
 	function isset_gsession($name, $arg=false){
 		
 		global $path;
+		global $gsessid;
 		
 		_expired_gsession();
 		
 		foreach(scandir($path) as $var){
-			if($var != ".." &&$var != "."){
-				if(explode("-", $var)[0] == $name){
+			if($var != ".." && $var != "."){
+				$exp = explode("-", $var);
+				if($name == $exp[0] && $gsessid == $exp[3]){
 					if($arg){
 						return $var;
 					}else{
@@ -165,7 +205,7 @@
 		$time = time();
 		
 		foreach(scandir($path) as $var){
-			if($var != ".." &&$var != "."){
+			if($var != ".." && $var != "."){
 				
 				$exp = explode("-", $var);
 				$start_time = $exp[1];
